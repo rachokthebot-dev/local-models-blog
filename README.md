@@ -2,13 +2,15 @@
 
 Field notes from six months of running local LLMs, image generators, and a music-analysis model on a Mac mini M4 with 32 GB unified memory.
 
-**Read the report:** https://rachokthebot-dev.github.io/local-models-blog/
+**📖 Read the report:** https://rachokthebot-dev.github.io/local-models-blog/
+**🔬 Bench scripts + raw data:** [`bench/`](bench/)
 
 ## What's in here
 
-- `index.html` — the full benchmark log, self-contained, no build step. Served via GitHub Pages.
+- [`index.html`](index.html) — the full benchmark log, self-contained, no build step. Served via GitHub Pages.
+- [`bench/`](bench/) — every script that produced a number on the page, plus the raw `*.json` outputs and markdown reports.
 
-## Sections covered
+## Sections of the report
 
 1. Executive summary — what we kept
 2. The hardware and the constraints
@@ -21,4 +23,4 @@ Field notes from six months of running local LLMs, image generators, and a music
 
 ## Reproducing the benchmarks
 
-Bench scripts live in `~/claude/` on the source machine. The page lists each script's purpose at the bottom.
+See [`bench/README.md`](bench/README.md) for the run-it-yourself commands. Hardware target: Mac mini M4, 32 GB; runtimes: rapid-mlx 0.4.2 + Ollama 0.30.4 (MLX backend).

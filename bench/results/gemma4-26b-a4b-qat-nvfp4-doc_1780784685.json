@@ -1,0 +1,23 @@
+{
+  "model": "mlx-community/gemma-4-26B-A4B-it-qat-nvfp4",
+  "label": "gemma4-26b-a4b-qat-nvfp4-doc",
+  "ts": "2026-06-06T15:21:36",
+  "axes": {
+    "doc": {
+      "output": "This excerpt from Mary Shelley\u2019s *Frankenstein* serves as a frame narrative, beginning with the letters of Robert Walton, an explorer seeking glory in the Arctic, who rescues a dying, eloquent stranger. This stranger, Victor Frankenstein, then recounts his life, beginning with his idyllic childhood in Geneva and his obsession with the secrets of nature. Driven by a thirst for knowledge, Victor moves to Ingolstadt, where he discovers the secret of imparting life to inanimate matter. However, his triumph turns to horror when his creation\u2014a grotesque, yellow-skinned being\u2014awakens, prompting Victor to flee in terror.\n\nThe narrative shifts to the creature\u2019s perspective. He describes his early existence as a sensory-overloaded being in the wild, which eventually leads him to observe a family of cottagers (Felix, Agatha, and an old man). Through watching them, the creature learns language, human emotion, and the concept of social hierarchy. He experiences a profound sense of loneliness and realizes that his physical deformity prevents him from ever being accepted by the humanity he so desperately wishes to join.\n\n**Central Themes:**\n1.  **The Danger of Unchecked Ambition:** The pursuit of knowledge without moral or social responsibility leads to catastrophic consequences.\n2.  **Nature vs. Nurture:** The creature\u2019s initial benevolence is corrupted by the rejection and hatred he receives from society.\n3.  **Isolation and Alienation:** Both Victor and his creature suffer from profound loneliness\u2014one by choice and intellectual obsession, the other by physical deformity and social exile.\n\n**Narrative Arc:**\nThe text follows a **circular/nested structure**: Walton\u2019s journey provides the context for Victor\u2019s story, which in turn contains the creature\u2019s autobiography. The arc moves from the **innocence** of childhood and scientific discovery to the **catastrophe** of creation, and finally to the **despair** of the creature\u2019s burgeoning self-awareness.",
+      "reasoning": "",
+      "elapsed_s": 188.15,
+      "ttft_s": 170.06,
+      "prompt_tokens": 45887,
+      "completion_tokens": 401,
+      "tok_s_end_to_end": 2.13,
+      "tok_s_decode": 22.17,
+      "judge": {
+        "correctness": 4,
+        "conciseness": 2,
+        "themes": 5,
+        "notes": "Accurate and thematically strong, but ~290 words plus headers/structure sections push it past tight; also first 50K tokens likely don't reach the cottagers arc in full."
+      }
+    }
+  }
+}

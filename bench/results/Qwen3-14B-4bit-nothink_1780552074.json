@@ -1,0 +1,39 @@
+{
+  "model": "mlx-community/Qwen3-14B-4bit",
+  "label": "Qwen3-14B-4bit-nothink",
+  "ts": "2026-06-03T22:33:24",
+  "axes": {
+    "reasoning": {
+      "output": "We are given:\n\n- **Train 1** (T1) leaves **City A** at **8:00 AM**, going **east** at **60 mph**.\n- **Train 2** (T2) leaves **City B** at **9:00 AM**, going **west** at **80 mph**.\n- **City B** is **240 miles east** of City A.\n- At **9:30 AM**, both trains enter **construction zones**, their speeds **drop by 25%** for **20 minutes**, then they **resume original speeds**.\n\nWe are to find when and where they **meet**.\n\n---\n\n### Step 1: Define positions at key times\n\nLet\u2019s track both trains\u2019 positions at **9:00 AM**, **9:30 AM**, and **9:50 AM**.\n\n---\n\n### Train 1 (T1) \u2013 from City A\n\n- **Speed**: 60 mph\n- **Start time**: 8:00 AM\n- **At 9:00 AM**, it has been traveling for **1 hour**.\n  - Distance covered: $ 60 \\text{ mph} \\times 1 \\text{ hour} = 60 $ miles\n  - So at 9:00 AM, T1 is **60 miles east of A**.\n\n- From **9:00 AM to 9:30 AM**, T1 travels for **30 minutes** (0.5 hours) at **60 mph**.\n  - Distance covered: $ 60 \\times 0.5 = 30 $ miles\n  - Position at **9:30 AM**: $ 60 + 30 = 90 $ miles east of A\n\n- From **9:30 AM to 9:50 AM**, T1 is in construction zone.\n  - Speed drops by 25%: $ 60 \\times 0.75 = 45 $ mph\n  - Time = 20 minutes = $ \\frac{1}{3} $ hour\n  - Distance covered: $ 45 \\times \\frac{1}{3} = 15 $ miles\n  - Position at **9:50 AM**: $ 90 + 15 = 105 $ miles east of A\n\n---\n\n### Train 2 (T2) \u2013 from City B\n\n- **Speed**: 80 mph\n- **Start time**: 9:00 AM\n- **At 9:00 AM**, T2 starts from **240 miles east of A**.\n\n- From **9:00 AM to 9:30 AM**, T2 travels for **30 minutes** (0.5 hours) at **80 mph**.\n  - Distance covered: $ 80 \\times 0.5 = 40 $ miles\n  - Position at **9:30 AM**: $ 240 - 40 = 200 $ miles east of A\n\n- From **9:30 AM to 9:50 AM**, T2 is in construction zone.\n  - Speed drops by 25%: $ 80 \\times 0.75 = 60 $ mph\n  - Time = 20 minutes = $ \\frac{1}{3} $ hour\n  - Distance covered: $ 60 \\times \\frac{1}{3} = 20 $ miles\n  - Position at **9:50 AM**: $ 200 - 20 = 180 $ miles east of A\n\n---\n\n### Step 2: Compute positions at 9:50 AM\n\n- **T1**: 105 miles east of A\n- **T2**: 180 miles east of A\n\n\u2192 So **at 9:50 AM**, they are **75 miles apart**.\n\n---\n\n### Step 3: Determine meeting time after 9:50 AM\n\nFrom **9:50 AM onward**, both trains return to their original speeds.\n\n- T1 speed: **60 mph**\n- T2 speed: **80 mph**\n- They are moving **toward each other**, so their **relative speed** is:\n  $$\n  60 + 80 = 140 \\text{ mph}\n  $$\n\n- Distance between them at 9:50 AM: **75 miles**\n- Time to meet: $ \\frac{75}{140} \\approx 0.5357 $ hours \u2248 **32.14 minutes**\n\nSo they meet at:\n\n- **9:50 AM + 32.14 minutes \u2248 10:22 AM**\n\n---\n\n### Step 4: Compute distance from City A at meeting time\n\nLet\u2019s compute how far T1 travels from **9:50 AM to 10:22 AM**:\n\n- Time = $ 10:22 - 9:50 = 32 $ minutes = $ \\frac{32}{60} = \\frac{8}{15} $ hours\n- Distance traveled: $ 60 \\times \\frac{8}{15} = 32 $ miles\n- T1 was at **105 miles** at 9:50 AM\n- Final position: $ 105 + 32 = 137 $ miles from A\n\n---\n\n### \u2705 Final Answer:\n\n**FINAL: 10:22 AM, 137 miles from A**",
+      "reasoning": "",
+      "elapsed_s": 98.27,
+      "ttft_s": 1.85,
+      "prompt_tokens": 178,
+      "completion_tokens": 1207,
+      "tok_s_end_to_end": 12.28,
+      "tok_s_decode": 12.52,
+      "judge": {
+        "final_answer": 5,
+        "steps": 5,
+        "clarity": 5,
+        "notes": "All checkpoints match reference; final time and distance within tolerance."
+      }
+    },
+    "doc": {
+      "output": "**Summary of *Frankenstein* by Mary Shelley:**\n\n*Frankenstein* is a gothic novel that explores the dangers of unchecked ambition and the ethical boundaries of scientific discovery. The narrative is framed through a series of letters written by Captain Robert Walton to his sister, Margaret Saville. Walton, an ambitious explorer, seeks to discover the North Pole and encounters the creature Victor Frankenstein, who recounts his tragic tale.\n\n**Three Central Themes:**\n\n1. **The Dangers of Ambition and Hubris:** The novel warns against the perils of overreaching human ambition. Victor Frankenstein's desire to unlock the secrets of life leads to catastrophic consequences, revealing the destructive potential of unchecked curiosity and ambition.\n\n2. **Isolation and Alienation:** Isolation is a recurring theme, affecting not only the Creature but also Victor and Walton. The Creature\u2019s physical and emotional isolation leads to despair and violence, while Victor\u2019s obsession with his creation isolates him from his loved ones. Walton, too, is isolated in his quest for glory and knowledge.\n\n3. **The Quest for Identity and Belonging:** The Creature's yearning for love, understanding, and acceptance is a poignant exploration of identity. His appearance and actions lead to rejection, emphasizing the pain of being an outsider and the importance of empathy and compassion.\n\n**Narrative Arc:**\n\nThe narrative follows a tragic arc, beginning with Walton's ambition and discovery of the Creature. The Creature's story is revealed through his own voice, detailing his creation by Victor and the emotional and physical suffering he endures. His isolation and rejection by society drive him to seek vengeance against his creator. Victor, consumed by guilt, pursues the Creature through the Arctic, ultimately meeting his own demise. The novel concludes with Walton\u2019s reflection on the dangers of ambition and the value of human connection, ending with the hope that his tale will serve as a cautionary lesson.\n\nThe story is a cautionary tale on the perils of unchecked ambition, the pain of isolation, and the moral responsibilities of scientific and intellectual pursuits.",
+      "reasoning": "",
+      "elapsed_s": 771.76,
+      "ttft_s": 684.33,
+      "prompt_tokens": 46725,
+      "completion_tokens": 416,
+      "tok_s_end_to_end": 0.54,
+      "tok_s_decode": 4.76,
+      "judge": {
+        "correctness": 2,
+        "conciseness": 2,
+        "themes": 5,
+        "notes": "Misidentifies Walton as encountering 'the creature Victor Frankenstein,' covers events beyond the first 50K tokens, and exceeds 300 words."
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "model": "mlx-community/gemma-4-26B-A4B-it-qat-nvfp4",
+  "label": "gemma4-26b-a4b-qat-nvfp4-vision",
+  "ts": "2026-06-06T15:20:37",
+  "axes": {
+    "vision": {
+      "output": "This is a screenshot of a web application called **LickBank**, which appears to be a video-based platform for learning guitar techniques and songs (likely a specialized video aggregator or a curated collection of YouTube videos).\n\n### **App Type and Purpose**\nThe app is a **video streaming/educational platform** specifically tailored for guitarists. It functions similarly to YouTube but is organized around \"licks\" (short musical phrases) and instructional content.\n\n### **Layout and Structure**\nThe interface uses a modern, clean, and responsive web layout with a dark theme. It is organized into three main sections:\n1.  **Top Navigation Bar:** A slim header containing the brand name, navigation links, and utility icons.\n2.  **Left Sidebar:** A vertical navigation menu containing a search bar and a list of categories or recent searches.\n3.  **Main Content Area:** A responsive grid of video \"tiles\" that display thumbnails, titles, and metadata.\n\n### **Main UI Elements**\n*   **Search Bar:** Located at the top of the left sidebar with a magnifying glass icon and placeholder text \"Search songs...\".\n*   **Navigation Links:** Top-left links for \"Licks\" and \"Songs\" (the \"Songs\" link is highlighted with a dark background, indicating the current view).\n*   **Utility Icons:** A \"dark mode/light mode\" toggle (moon icon) and a \"grid/list\" view toggle (four-dot icon) in the top right.\n*   **Action Button:** A prominent \"Import from YouTube\" button in the top right.\n*   **Video Tiles:** Each tile consists of:\n    *   A large **thumbnail image** with a timestamp in the bottom right corner (e.g., \"3:24\", \"14:59\").\n    *   A **Title** (e.g., \"The Smiths - This Charming Man\").\n    *   **Metadata** showing the number of \"licks\" and the creator/source (e.g., \"1 lick \u00b7 Nikolas Gugotki\").\n    *   An **Options Menu** (three vertical dots) for more actions.\n\n### **Content and Visible Text**\nThe content is entirely music-related, focusing on specific guitar songs and exercises. Visible text includes:\n*   **Song Titles:** \"The Smiths - This Charming Man,\" \"Eagles - Hotel California,\" \"Pink Floyd - Comfortably Numb,\" \"Alice in Chains - Man in the Box,\" \"Black Sabbath - Paranoid,\" and \"Tears For Fears - Everybody Wants To Rule The World.\"\n*   **Instructional Content:** \"10 Minute Pentatonic Workout,\" \"Speed practice exercise,\" and \"Easy Guitar Solo #4.\"\n*   **Metadata Examples:** \"2 licks,\" \"0 licks,\" \"4 licks.\"\n\n### **User Activity**\nThe user is currently **browsing a library of guitar song tutorials and exercises**. Based on the highlighted \"Songs\" tab in the top left, they are specifically looking through a collection of songs rather than individual technical licks. They are likely in the \"discovery\" phase, looking for a specific song to learn or a practice routine to follow.",
+      "reasoning": "",
+      "elapsed_s": 22.76,
+      "ttft_s": 3.01,
+      "prompt_tokens": 331,
+      "completion_tokens": 672,
+      "tok_s_end_to_end": 29.53,
+      "tok_s_decode": 34.02,
+      "judge": {
+        "correctness": 5,
+        "specificity": 5,
+        "completeness": 5,
+        "notes": "Accurately identifies LickBank as a guitar learning app with detailed UI elements, grid structure, and specific song titles matching the screenshot."
+      }
+    }
+  }
+}

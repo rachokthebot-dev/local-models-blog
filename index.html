@@ -411,7 +411,8 @@
       <h1>What actually <em>runs</em> on a 32&nbsp;GB Mac mini in 2026</h1>
       <p class="intro">
         Six months of running local LLMs, image generators, and a music-analysis model on the same Apple Silicon box.
-        Decode rates, prefill costs, quality scores, and a stack of dead ends. Everything below is measured, not vibed.
+        Decode rates, prefill costs, quality scores, and a stack of dead ends. Everything below is measured —
+        <a href="https://github.com/rachokthebot-dev/local-models-blog/tree/main/bench">the scripts and raw JSON live in the repo</a>.
       </p>
       <div class="meta">Updated 2026-06-10 · Mac mini M4 · 32 GB unified · ~120 GB/s bandwidth</div>
       <nav class="toc">
@@ -423,6 +424,7 @@
         <a href="#tracking">Watchlist <span class="n">05</span></a>
         <a href="#ceiling">Performance ceiling <span class="n">06</span></a>
         <a href="#methods">Methodology <span class="n">07</span></a>
+        <a href="https://github.com/rachokthebot-dev/local-models-blog/tree/main/bench">↗ bench scripts <span class="n">↗</span></a>
       </nav>
     </div>
     <div class="hero-fig" aria-hidden="true">
@@ -985,16 +987,32 @@
 
     <h3>Bench scripts (for reproducibility)</h3>
 
-<pre><code>~/claude/bench_3axis.py        # reasoning + vision + long-doc, streaming SSE
-~/claude/judge_3axis.py        # LLM-as-judge wrapper around `claude -p`
-~/claude/bench_toolcall.py     # 7-case tool-call fidelity suite
-~/claude/bench_server_ttft.py  # cold prefill timing
-~/claude/bench_gemma_swap.py   # GGUF q8_0 vs NVFP4 MLX delta
-~/claude/local_bench_mlx.py    # 5-prompt MLX coding bench
-~/claude/graft_mtp.py          # MTPLX MoE grafting recipe
-</code></pre>
+    <p>Every script that produced a number on this page is checked into <a href="https://github.com/rachokthebot-dev/local-models-blog/tree/main/bench"><code>./bench/</code></a>. Walk-through and run instructions in the <a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/README.md">bench/README</a>.</p>
 
-    <p>Raw run JSON at <code>~/claude/bench_results/</code>; cached long-doc input at <code>~/claude/bench_data/frankenstein.txt</code>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Script</th><th>What it measures</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/bench_3axis.py"><code>bench_3axis.py</code></a></td><td>Reasoning + vision + long-doc decode/TTFT against rapid-mlx <code>/v1</code>. Streams SSE, captures content + reasoning.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/judge_3axis.py"><code>judge_3axis.py</code></a></td><td>LLM-as-judge wrapper around the local <code>claude -p</code> CLI. Scores 1–5 against a rubric.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/bench_toolcall.py"><code>bench_toolcall.py</code></a></td><td>7-case single-turn function-calling suite + cold prefill on a Hermes-sized prompt.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/bench_server_ttft.py"><code>bench_server_ttft.py</code></a></td><td>Cold-prefill TTFT on a ~13 K-token system prefix.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/bench_gemma_swap.py"><code>bench_gemma_swap.py</code></a></td><td>GGUF q8_0 vs NVFP4 MLX delta on a single coding prompt against Ollama.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/bench_qwen_hermes.py"><code>bench_qwen_hermes.py</code></a></td><td>Tool-call sampling sweep validating the Qwen team's published recipe.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/local_bench_mlx.py"><code>local_bench_mlx.py</code></a></td><td>5-prompt coding bench against Ollama's MLX backend.</td></tr>
+        <tr><td><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/gemma4_mlx_bench.py"><code>gemma4_mlx_bench.py</code></a></td><td>Original Gemma 4 12 B MLX harness (pre-26B-QAT generation).</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Raw data + reports</h3>
+    <p>Raw run JSON and the markdown reports the post draws from are in <a href="https://github.com/rachokthebot-dev/local-models-blog/tree/main/bench/results"><code>bench/results/</code></a>:</p>
+    <ul>
+      <li><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/results/REPORT.md"><code>REPORT.md</code></a> — original 3-axis run, Qwen3-14B vs Qwen3-VL-8B (2026-06-03)</li>
+      <li><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/results/REPORT_v2_gemma4_vs_qwen3.md"><code>REPORT_v2_gemma4_vs_qwen3.md</code></a> — Gemma 4 12 B vs Qwen3 head-to-head (2026-06-04)</li>
+      <li><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/results/REPORT_v3_throughput_hermes.md"><code>REPORT_v3_throughput_hermes.md</code></a> — qwen-hermes / gemma-hermes throughput (2026-06-04)</li>
+      <li><a href="https://github.com/rachokthebot-dev/local-models-blog/blob/main/bench/results/REPORT_v4_gemma4_26b_a4b_qat.md"><code>REPORT_v4_gemma4_26b_a4b_qat.md</code></a> — Gemma 4 26B-A4B QAT NVFP4 across all axes (2026-06-06)</li>
+    </ul>
+
+    <p>Each <code>*.json</code> in the same directory has <code>prompt</code>, <code>comp_tok</code>, <code>ttft_s</code>, <code>total_s</code>, <code>decode_tps</code>, and the full streamed content — so any score can be re-judged with a different rubric or model.</p>
   </div>
 </section>
 

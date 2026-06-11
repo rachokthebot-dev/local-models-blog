@@ -1,0 +1,17 @@
+{
+  "model": "mlx-community/gemma-4-26B-A4B-it-qat-nvfp4",
+  "label": "gemma4-26b-a4b-qat-spec-8",
+  "ts": "2026-06-06T18:47:23",
+  "axes": {
+    "reasoning": {
+      "output": "To find the meeting time and distance, we will track the position of both trains relative to City A. Let $x$ be the distance from City A.\n\n### 1. Positions at 9:00 AM\n*   **Train A (from City A):** It has been traveling for 1 hour (8:00 to 9:00) at 60 mph.\n    *   $x_A(9:00) = 60 \\times 1 = 60$ miles.\n*   **Train B (from City B):** It is just departing City B (240 miles from A).\n    *   $x_B(9:00) = 240$ miles.\n\n### 2. Positions at 9:30 AM\nBetween 9:00 AM and 9:30 AM (0.5 hours), both trains travel at their original speeds.\n*   **Train A:** Travels $60 \\times 0.5 = 30$ miles.\n    *   $x_A(9:30) = 60 + 30 = 90$ miles.\n*   **Train B:** Travels $80 \\times 0.5 = 40$ miles (heading west, so distance from A decreases).\n    *   $x_B(9:30) = 240 - 40 = 200$ miles.\n\n### 3. Positions at 9:50 AM\nAt 9:30 AM, speeds are reduced by 25%.\n*   **New Speed A:** $60 \\times 0.75 = 45$ mph.\n*   **New Speed B:** $80 \\times 0.75 = 60$ mph.\nThe construction lasts for 20 minutes ($\\frac{1}{3}$ hour).\n*   **Train A:** Travels $45 \\times \\frac{1}{3} = 15$ miles.\n    *   $x_A(9:50) = 90 + 15 = 105$ miles.\n*   **Train B:** Travels $60 \\times \\frac{1}{3} = 20$ miles.\n    *   $x_B(9:50) = 200 - 20 = 180$ miles.\n\n### 4. Computing the Meeting Time\nAt 9:50 AM, the trains resume their original speeds:\n*   **Speed A:** 60 mph.\n*   **Speed B:** 80 mph.\n*   **Current Distance between them:** $180 - 105 = 75$ miles.\n*   **Closing Speed:** $60 + 80 = 140$ mph.\n\nLet $t$ be the time in hours after 9:50 AM when they meet:\n$$140t = 75$$\n$$t = \\frac{75}{140} = \\frac{15}{28} \\text{ hours}$$\n\nConvert $t$ to minutes:\n$$\\frac{15}{28} \\times 60 = \\frac{900}{28} \\approx 32.14 \\text{ minutes}$$\nTo be precise: $32 \\frac{1}{7}$ minutes.\n\n**Meeting Time:** 9:50 AM + 32 minutes and $\\approx 8.5$ seconds $\\approx$ **10:22:08 AM** (or exactly $10:22 \\frac{1}{7}$ AM).\n\n### 5. Computing Meeting Distance from City A\nWe use Train A's position at 9:50 AM and add the distance traveled after 9:50 AM:\n$$\\text{Distance} = 105 + (60 \\times \\frac{15}{28})$$\n$$\\text{Distance} = 105 + \\frac{900}{28} = 105 + \\frac{225}{7}$$\n$$\\text{Distance} = \\frac{735 + 225}{7} = \\frac{960}{7} \\approx 137.14 \\text{ miles}$$\n\nFINAL: 10:22 1/7 AM, 137 1/7 miles from A",
+      "reasoning": "",
+      "elapsed_s": 31.14,
+      "ttft_s": 2.17,
+      "prompt_tokens": 182,
+      "completion_tokens": 986,
+      "tok_s_end_to_end": 31.66,
+      "tok_s_decode": 34.03
+    }
+  }
+}

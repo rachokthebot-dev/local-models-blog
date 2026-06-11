@@ -1,0 +1,39 @@
+{
+  "model": "gemma4:12b-mlx",
+  "label": "gemma4-12b-mlx-nothink",
+  "ts": "2026-06-04T16:32:12",
+  "axes": {
+    "reasoning": {
+      "output": "To find the meeting point and time, we will track the positions of both trains relative to City A ($x = 0$).\n\n**1. Positions at 9:00 AM:**\n*   **Train A:** Has been traveling for 1 hour (8:00 to 9:00) at 60 mph.\n    $x_A = 60 \\text{ mph} \\times 1 \\text{ hour} = 60$ miles.\n*   **Train B:** Just starting from City B (240 miles east of A).\n    $x_B = 240$ miles.\n*   **Distance between them:** $240 - 60 = 180$ miles.\n\n**2. Positions at 9:30 AM:**\nBoth trains travel for 30 minutes (0.5 hours) at their original speeds.\n*   **Train A:** Travels $60 \\times 0.5 = 30$ miles.\n    $x_A = 60 + 30 = 90$ miles.\n*   **Train B:** Travels $80 \\times 0.5 = 40$ miles (westward).\n    $x_B = 240 - 40 = 200$ miles.\n*   **Distance between them:** $200 - 90 = 110$ miles.\n\n**3. Positions at 9:50 AM:**\nBoth trains enter construction zones for 20 minutes (1/3 hour). Their speeds are reduced by 25%.\n*   New speed of Train A: $60 \\times 0.75 = 45$ mph.\n*   New speed of Train B: $80 \\times 0.75 = 60$ mph.\nDistance traveled in 1/3 hour:\n*   **Train A:** Travels $45 \\times (1/3) = 15$ miles.\n    $x_A = 90 + 15 = 105$ miles.\n*   **Train B:** Travels $60 \\times (1/3) = 20$ miles (westward).\n    $x_B = 200 - 20 = 180$ miles.\n*   **Distance between them at 9:50 AM:** $180 - 105 = 75$ miles.\n\n**4. Computing the Meeting Time:**\nAt 9:50 AM, both trains resume their original speeds (60 mph and 80 mph). They are moving toward each other.\n*   **Combined Speed:** $60 + 80 = 140$ mph.\n*   **Remaining Distance:** 75 miles.\n*   **Time to meet:** $\\text{Distance} / \\text{Speed} = 75 / 140 = 15/28$ hours.\n\nConvert $15/28$ hours to minutes:\n$\\frac{15}{28} \\times 60 \\approx 32.14$ minutes.\nSpecifically, $\\frac{900}{28} = \\frac{225}{7}$ minutes $\\approx 32.14$ minutes.\n\nAdding this to 9:50 AM:\n$50 + 32.14 = 82.14$ minutes past 9:00.\nThis is **10:22 AM** (and approximately 8.6 seconds).\n\n**5. Computing the Meeting Distance from City A:**\nWe calculate the position of Train A at the meeting time.\nTrain A was at 105 miles at 9:50 AM and traveled for $15/28$ hours at 60 mph.\n$\\text{Distance} = 105 + (60 \\times \\frac{15}{28})$\n$\\text{Distance} = 105 + (\\frac{900}{28}) = 105 + \\frac{225}{7}$\n$\\text{Distance} = 105 + 32.1428... = 137.1428...$ miles.\n\nTo be precise: $105 + 32\\frac{1}{7} = 137\\frac{1}{7}$ miles.\n\nRounding to the nearest minute and hundredth of a mile:\nTime: 10:22 AM\nDistance: 137.14 miles\n\nFINAL: 10:22 AM, 137.14 miles from A",
+      "reasoning": "",
+      "elapsed_s": 88.94,
+      "ttft_s": 1.81,
+      "prompt_tokens": 182,
+      "completion_tokens": 1034,
+      "tok_s_end_to_end": 11.63,
+      "tok_s_decode": 11.87,
+      "judge": {
+        "final_answer": 5,
+        "steps": 5,
+        "clarity": 5,
+        "notes": "All checkpoints, final time, and distance match the reference exactly with clear, well-organized reasoning."
+      }
+    },
+    "doc": {
+      "output": "This text comprises the opening letters and early chapters of Mary Shelley\u2019s *Frankenstein*. It introduces Victor Frankenstein, a man consumed by an obsessive desire to uncover the \"secrets of heaven and earth.\" After studying chemistry and physiology in Ingolstadt, he discovers how to bestow animation upon lifeless matter. In a solitary cell, he spends months assembling human remains until he successfully creates a gigantic, hideous being. Immediately overwhelmed by horror and regret, Victor flees his creation.\n\nThe narrative then shifts to the perspective of the Creature, who recounts his early memories of sensory discovery in the wilderness. He learns to navigate the world, find food, and eventually observe a human cottage. There, he learns rudimentary language from an old man, a girl, and a boy. Despite their initial hostility, they provide him with warmth and education. However, his benevolence is met with violence when the villagers discover his presence. The Creature observes them from hiding, developing a profound affection for the cottagers while simultaneously feeling isolated by his own grotesque appearance.\n\n**Central Themes:**\n1. **The Danger of Forbidden Knowledge:** Victor\u2019s pursuit of scientific mastery over life and death leads to uncontrollable consequences.\n2. **Isolation and Alienation:** Both characters suffer deeply from being \"unfashioned creatures,\" separated from human society by their unique circumstances.\n3. **Nature vs. Nurture:** The story explores whether the Creature is inherently \"evil\" or a product of his abandonment and suffering.\n\n**Narrative Arc:**\nThe narrative follows a **dualistic arc**: Victor moves from intellectual ambition to horrified responsibility, while the Creature moves from sensory ignorance to social awareness and eventual despair.",
+      "reasoning": "",
+      "elapsed_s": 580.16,
+      "ttft_s": 545.65,
+      "prompt_tokens": 45887,
+      "completion_tokens": 336,
+      "tok_s_end_to_end": 0.58,
+      "tok_s_decode": 9.74,
+      "judge": {
+        "correctness": 3,
+        "conciseness": 2,
+        "themes": 4,
+        "notes": "Frame story with Walton's letters is omitted; summary exceeds 300 words and includes events (cottage observation, language learning) likely beyond the first 50K tokens."
+      }
+    }
+  }
+}
