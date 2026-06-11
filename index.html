@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local models on a Mac mini M4 32 GB — what we tested, what we kept</title>
+<meta name="description" content="A hands-on benchmark log of local LLMs, image generators, and music-analysis models on an M4 mini 32 GB. Reasoning, vision, long-doc, tool-call, image quality, and section labeling — measured, not hand-waved.">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --ink: #1c1a17;
+    --muted: #5a544c;
+    --rule: #e6e1d8;
+    --accent: #b3431a;
+    --code-bg: #f1ede4;
+    --table-stripe: #f5f1e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15140f;
+      --ink: #ece8df;
+      --muted: #968d7e;
+      --rule: #2c2924;
+      --accent: #e07a4a;
+      --code-bg: #1e1c17;
+      --table-stripe: #1a1814;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.55 ui-serif, "Iowan Old Style", "Charter", Georgia, serif;
+    font-feature-settings: "kern", "liga", "onum", "tnum" 0;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 56px 28px 96px; }
+  header { margin-bottom: 56px; }
+  header .kicker {
+    font: 600 13px/1.2 ui-sans-serif, -apple-system, system-ui, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font: 700 38px/1.1 ui-serif, "Iowan Old Style", "Charter", Georgia, serif;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+  }
+  header .dek {
+    color: var(--muted);
+    font-size: 19px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  header .meta {
+    margin-top: 22px;
+    color: var(--muted);
+    font: 500 13px/1.4 ui-sans-serif, -apple-system, system-ui, sans-serif;
+    letter-spacing: 0.04em;
+  }
+  h2 {
+    font: 700 24px/1.25 ui-serif, "Iowan Old Style", "Charter", Georgia, serif;
+    letter-spacing: -0.005em;
+    margin: 56px 0 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  h3 {
+    font: 600 19px/1.3 ui-serif, "Iowan Old Style", "Charter", Georgia, serif;
+    margin: 32px 0 10px;
+  }
+  h4 {
+    font: 600 15px/1.3 ui-sans-serif, -apple-system, system-ui, sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 24px 0 8px;
+  }
+  p, li { color: var(--ink); }
+  p { margin: 0 0 14px; }
+  ul, ol { padding-left: 22px; margin: 0 0 16px; }
+  li { margin-bottom: 6px; }
+  strong { font-weight: 700; }
+  code, kbd {
+    font: 14px/1.4 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font: 13px/1.55 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    margin: 0 0 18px;
+  }
+  pre code { background: transparent; padding: 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+  a:hover { text-decoration-thickness: 2px; }
+  blockquote {
+    margin: 0 0 18px;
+    padding: 4px 0 4px 18px;
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+    font-style: italic;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 40px 0; }
+
+  /* Tables */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 22px;
+    font: 14px/1.4 ui-sans-serif, -apple-system, system-ui, sans-serif;
+  }
+  .tbl th, .tbl td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .tbl th {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: transparent;
+  }
+  .tbl tbody tr:nth-child(odd) { background: var(--table-stripe); }
+  .tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tbl .win { color: var(--accent); font-weight: 600; }
+  .wrap { overflow-x: auto; }
+
+  /* Callout */
+  .callout {
+    background: var(--code-bg);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 0 6px 6px 0;
+    margin: 22px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font: 700 11px/1 ui-sans-serif, -apple-system, system-ui, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  /* Pull-quote / heads-up */
+  .toc {
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 40px;
+    font: 14px/1.6 ui-sans-serif, -apple-system, system-ui, sans-serif;
+  }
+  .toc h4 { margin-top: 0; }
+  .toc ol { padding-left: 20px; margin-bottom: 0; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font: 13px/1.6 ui-sans-serif, -apple-system, system-ui, sans-serif;
+  }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="kicker">Field notes · M4 mini · 32 GB</div>
+  <h1>What actually runs on a 32 GB Mac mini in 2026 — a benchmark log</h1>
+  <p class="dek">Six months of running local LLMs, image generators, and a music-analysis model on the same Apple Silicon box. Decode rates, prefill costs, quality scores, and a stack of dead ends. Everything below is measured, not vibed.</p>
+  <p class="meta">Last updated 2026-06-10 · Mac mini M4 · 32 GB unified memory · ~120 GB/s memory bandwidth</p>
+</header>
+
+<div class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#tldr">Executive summary — what we kept</a></li>
+    <li><a href="#hw">The box and the rules of the game</a></li>
+    <li><a href="#llms">General-purpose LLMs</a></li>
+    <li><a href="#image">Image generation</a></li>
+    <li><a href="#music">Music analysis</a></li>
+    <li><a href="#tracking">Models on the watchlist</a></li>
+    <li><a href="#ceiling">The performance ceiling, explained</a></li>
+    <li><a href="#methods">Methodology and caveats</a></li>
+  </ol>
+</div>
+
+<!-- =================== EXEC SUMMARY =================== -->
+<h2 id="tldr">Executive summary — what we kept</h2>
+
+<p>After cycling through roughly twenty open-weight models across LLM, image, and music tasks, three slots are settled and a fourth (audio LLM) is still vacant. The shortlist below is what survived the cuts.</p>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Slot</th><th>Winner</th><th>Why it beat the field</th>
+</tr></thead>
+<tbody>
+  <tr>
+    <td><strong>Tool-calling agent LLM</strong></td>
+    <td><code>Qwen3.6-35B-A3B-coding</code> NVFP4 MLX</td>
+    <td>34&nbsp;tok/s on Ollama-MLX, 41&nbsp;tok/s on rapid-mlx; 7/7 on the tool-call suite. MoE with 3 B active = bandwidth-class of a 3 B model, capacity of a 35 B. Nothing in five months of tested alternatives has tied it on both axes.</td>
+  </tr>
+  <tr>
+    <td><strong>Chat / vision / long-doc LLM</strong></td>
+    <td><code>Gemma 4 26B-A4B QAT NVFP4</code></td>
+    <td>34&nbsp;tok/s decode (ties Qwen), wins vision outright (1.6× decode and 4× fewer image tokens vs Qwen3-VL-8B), wins long-doc decode (2.3× over Gemma 4 12B at 46 K context). Quality 5/5/5 on reasoning and vision.</td>
+  </tr>
+  <tr>
+    <td><strong>Image generation — speed</strong></td>
+    <td><code>FLUX.2 Klein 4B</code> via MFLUX</td>
+    <td>60 s per 1024² image at 4 steps. Coexists with an LLM hot in memory — no eviction needed. The default for iteration.</td>
+  </tr>
+  <tr>
+    <td><strong>Image generation — quality</strong></td>
+    <td><code>FLUX.2 Klein 9B MLX-Q4</code></td>
+    <td>115 s per image. Pre-quantized 4-bit MLX (8.9 GB, smaller than the 4 B's FP16). Visibly sharper faces, fabric, text. Needs <code>ollama stop</code> first — won't co-resident with a 22 GB LLM.</td>
+  </tr>
+  <tr>
+    <td><strong>Music structure analysis</strong></td>
+    <td><code>SongFormer</code> (ASLP-lab)</td>
+    <td>2.97 GB specialist transformer + MuQ SSL encoder. Beats Gemini 2.5 Pro on SongFormBench, runs in seconds per song on MPS, deterministic across CPU/GPU. Local, free, no quota. Replaced our paid Gemini Flash pipeline.</td>
+  </tr>
+  <tr>
+    <td><strong>Local audio LLM (general)</strong></td>
+    <td>— none —</td>
+    <td>Gemma 4 e4b collapses every song section to "chorus". Qwen2.5-Omni isn't in mlx-vlm yet. <code>mlx-lm-omni</code> has API rot. Waiting on tooling.</td>
+  </tr>
+</tbody>
+</table></div>
+
+<div class="callout">
+<div class="label">The one-sentence headline</div>
+<p>On a 32 GB Apple Silicon box, the winning recipe is <strong>3–4 B-active MoE at NVFP4 quantization</strong> for text, <strong>distilled 4-step diffusion</strong> for images, and <strong>specialist transformers</strong> (not omni LLMs) for music — and the throughput ceiling is set by memory bandwidth, not parameter count.</p>
+</div>
+
+<!-- =================== HARDWARE =================== -->
+<h2 id="hw">The box and the rules of the game</h2>
+
+<p>Everything below runs on the same machine:</p>
+
+<ul>
+  <li><strong>Mac mini M4</strong>, 10-core CPU, 10-core GPU</li>
+  <li><strong>32 GB unified memory</strong> (single pool, shared CPU/GPU)</li>
+  <li>~120 GB/s memory bandwidth (the binding constraint, as it turns out)</li>
+  <li>macOS Sequoia, brew-managed everything</li>
+</ul>
+
+<p>Three constraints shape every decision:</p>
+
+<ol>
+  <li><strong>Memory is the hard wall.</strong> Subtract ~6 GB for macOS, ~3–5 GB for running iPad sim and dev apps, and the largest LLM that comfortably resident is ~22 GB on disk (≈ 26 GB hot with KV cache at 64 K context). Anything larger swaps to disk and turnover collapses.</li>
+  <li><strong>Decode is bandwidth-bound.</strong> Once weights are in memory, tokens-per-second is set by how fast the active parameters can be streamed through the GPU. MoEs win at decode because only the active experts move.</li>
+  <li><strong>Prefill is compute-bound and quadratic in context.</strong> A 46 K-token document costs 9–11 minutes of prefill on every cold cache hit. That's not a tuning issue — that's physics on this rig.</li>
+</ol>
+
+<!-- =================== LLMS =================== -->
+<h2 id="llms">General-purpose LLMs</h2>
+
+<p>Tested across four task shapes that map onto how the box actually gets used: short-context reasoning (chat, code review, planning), vision (screenshot Q&A), long-document summarization (≈ 46 K input tokens), and tool-call fidelity (the agentic loop).</p>
+
+<h3>Reasoning — 5-step word problem, ~180 input tokens</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Rank</th><th>Model</th><th>Runtime / quant</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Total</th><th>Quality</th>
+</tr></thead>
+<tbody>
+  <tr><td>1</td><td class="win"><strong>Gemma 4 26B-A4B QAT</strong></td><td>rapid-mlx · nvfp4</td><td class="num"><strong>34.1</strong></td><td class="num">2.1 s</td><td class="num">31.1 s</td><td>5/5/5</td></tr>
+  <tr><td>2</td><td>qwen-hermes (35B-A3B)</td><td>Ollama-MLX · nvfp4</td><td class="num">34.0</td><td class="num">11.9 s*</td><td class="num">70.7 s</td><td>—</td></tr>
+  <tr><td>3</td><td>gemma-hermes (6.3 B dense)</td><td>Ollama-MLX · /no_think</td><td class="num">31.9</td><td class="num">25.4 s*</td><td class="num">64.4 s</td><td>—</td></tr>
+  <tr><td>4</td><td>Qwen3-14B 4-bit</td><td>rapid-mlx · --no-thinking</td><td class="num">12.5</td><td class="num">1.9 s</td><td class="num">98.3 s</td><td>5/5/5</td></tr>
+  <tr><td>5</td><td>gemma4:12b-mlx</td><td>Ollama-MLX · nvfp4</td><td class="num">11.9</td><td class="num">1.8 s</td><td class="num">88.9 s</td><td>5/5/5</td></tr>
+</tbody>
+</table></div>
+<p style="color:var(--muted);font-size:13px;margin-top:-12px"><em>*Cold-load TTFTs — pessimistic; the model was being swapped in.</em></p>
+
+<h3>Vision — LickBank app screenshot</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Rank</th><th>Model</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Image tokens</th><th>Quality</th>
+</tr></thead>
+<tbody>
+  <tr><td>1</td><td class="win"><strong>Gemma 4 26B-A4B QAT</strong></td><td class="num"><strong>34.0</strong></td><td class="num">3.0 s</td><td class="num"><strong>331</strong></td><td>5/5/5</td></tr>
+  <tr><td>2</td><td>Qwen3-VL-8B 4-bit</td><td class="num">21.5</td><td class="num">10.6 s</td><td class="num">1,436</td><td>5/5/5</td></tr>
+  <tr><td>3</td><td>Gemma 4 12B-mlx (Ollama)</td><td colspan="4">Text-only — Ollama's MLX package ships without the vision projector</td></tr>
+</tbody>
+</table></div>
+
+<p>The Gemma 4 26B-A4B QAT's vision tokenizer is the surprise. 331 image tokens for the same screenshot that Qwen3-VL spends 1,436 tokens on — a 4.3× compression with no judged quality loss. Combined with 1.6× decode, it's not a close fight.</p>
+
+<h3>Long-doc summarization — ~46 K-token Frankenstein excerpt</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Rank</th><th>Model</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Total wall-clock</th><th>Quality</th>
+</tr></thead>
+<tbody>
+  <tr><td>1</td><td class="win"><strong>Gemma 4 26B-A4B QAT</strong></td><td class="num"><strong>22.2</strong></td><td class="num">170 s</td><td class="num">188 s</td><td>4/2/5</td></tr>
+  <tr><td>2</td><td>gemma4:12b-mlx</td><td class="num">9.7</td><td class="num">546 s</td><td class="num">580 s</td><td>3/2/4</td></tr>
+  <tr><td>3</td><td>Qwen3-14B 4-bit</td><td class="num">4.8</td><td class="num">684 s</td><td class="num">772 s</td><td>2/2/5</td></tr>
+</tbody>
+</table></div>
+
+<p>The 26B-A4B's MoE structure means prefill scales with the ~4 B active params, not the 26 B total. At 46 K context the long-doc cost collapses 3× vs the dense 12 B and 4× vs the dense 14 B.</p>
+
+<h3>Tool-call fidelity — 7-case suite (Hermes use case)</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Model</th><th>Architecture</th><th class="num">Tool fidelity</th><th class="num">Decode tok/s</th><th class="num">Cold prefill (~13 K)</th></tr>
+</thead>
+<tbody>
+  <tr><td class="win"><strong>Qwen3.6-35B-A3B 4-bit</strong></td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num"><strong>41.5</strong></td><td class="num">24.5 s</td></tr>
+  <tr><td>Nemotron-3-Nano 30B-A3B 4-bit</td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num">41.8</td><td class="num">26.2 s</td></tr>
+  <tr><td>GLM-4.7-Flash 4-bit</td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num">35.2</td><td class="num">49.8 s</td></tr>
+  <tr><td>Gemma 4 26B-A4B 4-bit</td><td>MoE 3.8 B-active</td><td class="num">7/7</td><td class="num">33.0</td><td class="num">25.4 s</td></tr>
+  <tr><td>Gemma 4 e4b 4-bit</td><td>~4 B</td><td class="num">6/7</td><td class="num">31.7</td><td class="num">16.7 s</td></tr>
+  <tr><td>Qwen3-Coder-Next 4-bit</td><td>MoE 80 B</td><td colspan="3">Disqualified — OOM at 42 GB > 32 GB unified</td></tr>
+  <tr><td>Devstral-Small-2505 4-bit</td><td>dense 24 B</td><td colspan="3">Broken — chat template ships without tool rendering; 6.3 tok/s anyway</td></tr>
+</tbody>
+</table></div>
+
+<p>The takeaway: <strong>fidelity doesn't separate the fitting models</strong>. Every MoE that fits in 32 GB hits 7/7. The differentiator is decode speed, and decode speed is bandwidth-bound. The 3 B-active MoEs cluster at the ceiling.</p>
+
+<h3>Quick reference — our installed presets</h3>
+
+<p>Six models, ~37 GB on disk (three Qwen presets share NVFP4 blobs at 21 GB; three Gemma presets share theirs at 16 GB):</p>
+
+<div class="wrap"><table class="tbl">
+<thead><tr><th>Name</th><th>Base</th><th>Use for</th></tr></thead>
+<tbody>
+  <tr><td><code>qwen-chat</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Daily driver. 8 K ctx, think off. ~34 tok/s.</td></tr>
+  <tr><td><code>qwen-reason</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Multi-step reasoning. 64 K ctx, think on.</td></tr>
+  <tr><td><code>qwen-hermes</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Hermes Agent default. 64 K ctx, tool-call sampling.</td></tr>
+  <tr><td><code>qwen-coding-fast</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Long-context refactors. 32 K ctx, 16 K predict.</td></tr>
+  <tr><td><code>gemma-chat</code></td><td>gemma4:26b-a4b NVFP4</td><td>Prose, alternate voice. ~27 tok/s.</td></tr>
+  <tr><td><code>gemma-reason</code></td><td>gemma4:26b-a4b NVFP4</td><td>Tiebreaker vs qwen-reason.</td></tr>
+  <tr><td><code>gemma-agent</code></td><td>gemma4:26b-a4b NVFP4</td><td>Former hermes default at 256 K max ctx.</td></tr>
+</tbody>
+</table></div>
+
+<!-- =================== IMAGE =================== -->
+<h2 id="image">Image generation</h2>
+
+<p>Stack: MFLUX (MLX-native FLUX/Qwen-Image/Z-Image port) at <code>~/.local/bin/mflux-*</code>, weights cached under <code>~/.cache/huggingface/hub/</code>, output to <code>~/imagen/</code>. Step-distilled diffusion (4 steps, guidance 1.0, no negative prompt) dominates the speed/quality curve on Apple Silicon.</p>
+
+<h3>Bench at 1024², q=4 (measured)</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Model</th><th class="num">Params</th><th class="num">Disk</th><th class="num">Peak RAM</th><th class="num">Per image</th><th>Verdict</th>
+</tr></thead>
+<tbody>
+  <tr><td class="win"><strong>FLUX.2 Klein 4B</strong></td><td class="num">4 B</td><td class="num">22 GB</td><td class="num">6–8 GB</td><td class="num"><strong>60 s</strong></td><td>Skill default. Co-runs with LLM hot.</td></tr>
+  <tr><td class="win"><strong>FLUX.2 Klein 9B MLX-Q4</strong></td><td class="num">9 B</td><td class="num">8.9 GB</td><td class="num">12–16 GB</td><td class="num"><strong>115 s</strong></td><td>Quality tier. Requires LLM eviction.</td></tr>
+  <tr><td>Z-Image-Turbo</td><td class="num">6 B</td><td class="num">5.5 GB</td><td class="num">—</td><td class="num">218 s @ 9 steps</td><td>Deleted. Klein 9B beats it on speed/quality curve.</td></tr>
+  <tr><td>Qwen-Image-2512</td><td class="num">20 B</td><td class="num">24 GB</td><td class="num">swap-bound</td><td class="num">1,300 s @ 20 steps</td><td>Deleted. Best text rendering, but 22 min/image is prohibitive.</td></tr>
+  <tr><td>FLUX.1-dev</td><td class="num">12 B</td><td colspan="4">Download stalled multiple times overnight. Abandoned for Klein.</td></tr>
+  <tr><td>HiDream-I1</td><td class="num">17 B</td><td colspan="4">Too tight on 32 GB; marginal gain over Klein 9B. Not pursued.</td></tr>
+</tbody>
+</table></div>
+
+<h3>The key insight</h3>
+
+<p>Klein 9B's pre-quantized MLX-Q4 build is <em>smaller on disk than Klein 4B's FP16</em> (8.9 GB vs 22 GB) but produces visibly sharper output. The size discrepancy is because Klein 4B is shipped at full precision and quantized at runtime via <code>-q 4</code>, while Klein 9B is pre-quantized by the community uploader. <strong>Do not pass <code>-q 4</code> to Klein 9B</strong> — re-quantizing already-quantized weights degrades them measurably.</p>
+
+<div class="callout">
+<div class="label">Memory math</div>
+<p>Klein 4B (~6–8 GB peak) fits alongside <code>gemma-hermes</code> at 65 K context (~16–18 GB). Klein 9B (~12–16 GB peak) does not. The Hermes skill at <code>~/.hermes/skills/creative/mflux-local-images/SKILL.md</code> issues <code>ollama stop gemma-hermes</code> before Klein 9B runs and lets the proxy's <code>keep_alive</code> ping reload the LLM on the next turn.</p>
+</div>
+
+<h3>Prompting note</h3>
+
+<p>Klein is trained on natural-language descriptive prose, not tag soup. <strong>Push toward photo:</strong> camera + lens ("shot on Sony A7R V, 85mm f/1.4"), light ("golden hour", "overcast diffused"), texture ("skin pores visible", "fabric weave", "film grain"), genre ("candid photograph", "documentary"). <strong>Avoid CGI tells:</strong> "8k", "masterpiece", "highly detailed", "cinematic", "trending on artstation". FLUX.2 has no negative-prompt support — express exclusions in the positive prompt.</p>
+
+<!-- =================== MUSIC =================== -->
+<h2 id="music">Music analysis</h2>
+
+<p>The use case: detect verse/chorus/bridge boundaries and label them for the Shreddy iPad practice app. We ran a multi-model bake-off and ended in an unexpected place — a specialist transformer beats every general-purpose LLM and audio-LLM we tried.</p>
+
+<h3>What we tested</h3>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Approach</th><th>Verdict</th>
+</tr></thead>
+<tbody>
+  <tr>
+    <td><strong>Gemini 2.5 Flash (audio-native, cloud)</strong></td>
+    <td>Strong labels, but hit the free-tier 250 K input tokens/day cap at ~32 songs. Paid is ~$0.002/song, but still cloud, still rate-limited, still external dependency.</td>
+  </tr>
+  <tr>
+    <td><strong>Claude Vision on spectrogram screenshots</strong></td>
+    <td>Worked but noticeably worse than audio-native LLMs. Spectrograms throw away too much of the signal.</td>
+  </tr>
+  <tr>
+    <td><strong>Gemma 4 e4b (local audio LLM)</strong></td>
+    <td>Collapsed every section to "chorus". Unusable. Other small audio LLMs equally weak.</td>
+  </tr>
+  <tr>
+    <td><strong>Qwen2.5-Omni (local audio LLM)</strong></td>
+    <td>Not loadable — <code>mlx-vlm</code> has no handler for it as of June 2026. <code>mlx-lm-omni</code> has API rot.</td>
+  </tr>
+  <tr>
+    <td><strong>librosa HPSS + bar-snap (DSP only, no ML)</strong></td>
+    <td>Surprisingly good boundary detection (9 musically-sensible cuts on a Seether track). Fully local, free, fast. But cannot label sections — just finds the cuts.</td>
+  </tr>
+  <tr>
+    <td class="win"><strong>SongFormer (specialist transformer)</strong></td>
+    <td><strong>Winner.</strong> 2.97 GB safetensors. MuQ SSL encoder feeds a structure-analysis transformer. Beats Gemini 2.5 Pro on SongFormBench. Eight-label vocab (intro, verse, chorus, bridge, inst, outro, silence, pre-chorus) is exactly what Shreddy needs. Seconds per song on MPS.</td>
+  </tr>
+  <tr>
+    <td>Music Flamingo 8B (NVIDIA, GGUF)</td>
+    <td>Kept as a tracked backup for narrative reasoning, but NVIDIA's noncommercial license blocks commercial use.</td>
+  </tr>
+</tbody>
+</table></div>
+
+<h3>The architecture lesson</h3>
+
+<p>This was the surprise of the whole project. We assumed an audio LLM would win — they're the new shiny — but a 2.97 GB specialist transformer trained on the actual task crushed both audio-native LLMs and image-vision LLMs operating on spectrograms. SongFormer's deterministic output (identical labels on CPU and MPS) is also operationally easier than any LLM call.</p>
+
+<div class="callout">
+<div class="label">Production setup</div>
+<p>Shreddy now ships with SongFormer in a Python 3.11 venv (SongFormer's deps don't all support 3.14), patched model in the project tree at <code>apps/data/models/songformer/</code>, helper module at <code>apps/scripts/songformer_inference.py</code>. The librosa BPM/key/beats path runs unchanged in parallel. Anthropic and Google API key fields were deleted from the settings UI — they're no longer needed.</p>
+</div>
+
+<!-- =================== TRACKING =================== -->
+<h2 id="tracking">Models on the watchlist</h2>
+
+<p>Not installed today, but worth re-evaluating when their tooling or licensing changes:</p>
+
+<div class="wrap"><table class="tbl">
+<thead><tr>
+  <th>Model</th><th>Why we're watching it</th><th>What needs to change</th>
+</tr></thead>
+<tbody>
+  <tr>
+    <td><strong>GLM-4.5-Air</strong></td>
+    <td>Best published BFCL tool-call score (76.7%, beats Qwen at 75.7%)</td>
+    <td>Needs a clean NVFP4 MLX build. Community GGUFs are ~25–30% slower on this rig.</td>
+  </tr>
+  <tr>
+    <td><strong>Qwen3.6 with native MTP</strong></td>
+    <td>1.4–1.6× decode on M4 Pro for dense 27 B per the spec</td>
+    <td>mlx-lm PR #990 needs to merge into a release. Today, no released runtime supports <code>qwen3_5_moe</code> native MTP — rapid-mlx 0.4.2's <code>--enable-mtp</code> is hard-coded to the older <code>qwen3_next</code> arch.</td>
+  </tr>
+  <tr>
+    <td><strong>MTPLX MoE backend</strong></td>
+    <td>1.71× on dense 27B verified on this rig; pending support for MoE MTP heads.</td>
+    <td><a href="https://github.com/youssofal/MTPLX/issues/87">youssofal/MTPLX#87</a> — request for <code>qwen3_next_moe_mtp</code> backend to handle 46-tensor MoE MTP heads (256 experts + gate + shared_expert).</td>
+  </tr>
+  <tr>
+    <td><strong>Gemma 4 vision-capable via rapid-mlx</strong></td>
+    <td>The 26B-A4B QAT already wins our vision axis; we'd want the 12 B's <code>gemma4_unified</code> arch path to mature too.</td>
+    <td>mlx-vlm 0.6.1 supports it but needs newer mlx-metal than brew supplies. Brew installs mlx-metal without a RECORD file, blocking pip upgrades.</td>
+  </tr>
+  <tr>
+    <td><strong>Nemotron-3-Nano 30B-A3B</strong></td>
+    <td>Ties Qwen3.6 on decode (41.8 vs 41.5 tok/s) and tool fidelity (7/7).</td>
+    <td>Nothing — it's a viable drop-in. No reason to switch from a working setup, but kept installed as backup.</td>
+  </tr>
+  <tr>
+    <td><strong>Music Flamingo 8B</strong></td>
+    <td>Could complement SongFormer with narrative/genre/mood description.</td>
+    <td>NVIDIA noncommercial license is a deal-breaker if Shreddy ever ships commercially.</td>
+  </tr>
+  <tr>
+    <td><strong>Qwen2.5-Omni / mlx-lm-omni</strong></td>
+    <td>The "general audio LLM" slot is still vacant; would unlock voice/music/effects analysis in one model.</td>
+    <td>mlx-vlm needs a Qwen2.5-Omni handler. mlx-lm-omni's API needs stabilizing.</td>
+  </tr>
+  <tr>
+    <td><strong>Qwen3-Next 80B (Qwen3-Coder-Next)</strong></td>
+    <td>Would lift the coding ceiling if it fit.</td>
+    <td>42 GB at 4-bit exceeds 32 GB unified — Metal OOMs on first prefill. Hard hardware ceiling; needs 64 GB box.</td>
+  </tr>
+</tbody>
+</table></div>
+
+<!-- =================== CEILING =================== -->
+<h2 id="ceiling">The performance ceiling, explained</h2>
+
+<p>The biggest realization from six months of benching: <strong>we are at the throughput ceiling for this hardware, and the levers people reach for don't move it.</strong> Here's the physics, summarized.</p>
+
+<h3>1. Decode is bandwidth-bound, not compute-bound</h3>
+
+<p>On a 3 B-active MoE at 4-bit, generating one token requires reading roughly 1.5 GB of weights through memory. Apple's M4 mini has ~120 GB/s of memory bandwidth. The arithmetic ceiling is 120 / 1.5 ≈ 80 tok/s; in practice runtime overhead and KV-cache reads halve that to ~40 tok/s. Every 3 B-active MoE we tested clusters at <strong>34–42 tok/s</strong> — Qwen, Nemotron, Gemma, GLM, all land there.</p>
+
+<h3>2. MoE pays off twice — at decode and at long-context prefill</h3>
+
+<p>Decode reads only the active experts (~3–4 B params) regardless of total size. Prefill on Apple Silicon also scales with the active-param count, not the total. That's why the 26 B-A4B QAT does long-doc summarization 3× faster than the dense 12 B Gemma — same prefill cost as a 4 B model, judged quality of a 26 B.</p>
+
+<h3>3. Speculative decoding doesn't help compute-light models</h3>
+
+<p>Speculative decoding (a draft model proposes tokens, the real model verifies in parallel) gives 1.4–1.7× on dense models — we measured 1.71× on Qwen3.6-27B-dense via MTPLX on this exact box. But its payoff scales with per-token compute, and a 3 B-active MoE is already compute-light. We benchmarked grafted MTP on Qwen3.6-35B-A3B at depth 1/2/3 and got <strong>0.94×, 0.73×, 0.58×</strong> — speculative makes the MoE slower. Confirmed by mlx-lm PR #990's author independently.</p>
+
+<h3>4. Lower-bit quants are not free throughput</h3>
+
+<p>Tried Unsloth's UD-3-bit Qwen3.6-35B-A3B expecting a decode win. Got <strong>34.7 tok/s vs uniform 4-bit's 41.5</strong>. The "3-bit" UD quant is actually mixed-precision: 270 layers at 8-bit, only 117 at 3-bit. In byte terms it's heavier than uniform 4-bit, and the mixed-precision dequant kernels add overhead. MLX's 4-bit kernel is also far more optimized than its 3-bit path.</p>
+
+<h3>5. The think toggle is the only 5× knob</h3>
+
+<p>Of all the sampling/runtime tweaks tested, only one moves wall-clock by a factor of 5. Disabling thinking on Qwen3.6 cuts a 293 s response to 55 s with no decode-rate change — the model just writes 1,900 tokens instead of 9,500. Everything else (<code>num_ctx</code>, <code>num_predict</code>, temperature, sampling) is in the 1.0–1.5× range.</p>
+
+<h3>6. The 32 GB wall</h3>
+
+<p>Even with NVFP4 quantization, the largest model that comfortably fits with a usable context window and KV cache is ~26 GB resident. Qwen3-Coder-Next at 42 GB is a hard out. Mixing two large models hot (e.g. <code>gemma-hermes</code> + Klein 9B image gen) requires explicit eviction. This isn't tunable — it's the hardware ceiling. A 64 GB box would unlock 80B-class models; a 32 GB box won't.</p>
+
+<div class="callout">
+<div class="label">Net</div>
+<p>For text on this rig, <code>Qwen3.6-35B-A3B-4bit</code> at ~41 tok/s on rapid-mlx (or ~34 tok/s on Ollama-MLX) is sitting at the MLX throughput ceiling. There is no free throughput lever. Revisit only if (a) PR #990 ships and a higher-compute MoE comes along, or (b) we upgrade the box.</p>
+</div>
+
+<!-- =================== METHODS =================== -->
+<h2 id="methods">Methodology and caveats</h2>
+
+<ul>
+  <li><strong>Sample size:</strong> N=1 per axis on a single prompt for most benches. Decode tok/s numbers are physics — they're reliable. Quality ratings (5/5/5 etc.) are directional, scored by Claude as judge against a rubric.</li>
+  <li><strong>TTFT contamination:</strong> "Cold prefill" numbers when the model is being swapped in include load time, not just prefill. Pure prefill cost on short prompts is 1–3 s for any of these models.</li>
+  <li><strong>Quant comparison isn't apples-to-apples:</strong> Gemma's NVFP4 vs Qwen's uniform 4-bit are different formats. Some Gemma 4 wins come from NVFP4 being newer and better-tuned for Apple Silicon than the older 4-bit MLX kernel.</li>
+  <li><strong>Same-family judge bias:</strong> Claude judging models has a possible bias toward Claude-flavored output. The reasoning axis has a ground-truth answer (10:22 AM, 137 mi on the train problem) so quality scores there are grounded; doc summary and vision scores rely on Claude's read.</li>
+  <li><strong>Tooling churn:</strong> rapid-mlx, mlx-vlm, mlx-metal, and Ollama-MLX all moved meaningfully between Apr and Jun 2026. Numbers tagged to specific versions. Re-run before relying on a six-month-old measurement.</li>
+</ul>
+
+<h3>Bench scripts (for reproducibility)</h3>
+
+<pre><code>~/claude/bench_3axis.py        # reasoning + vision + long-doc, streaming SSE
+~/claude/judge_3axis.py        # LLM-as-judge wrapper around `claude -p`
+~/claude/bench_toolcall.py     # 7-case tool-call fidelity suite
+~/claude/bench_server_ttft.py  # cold prefill timing
+~/claude/bench_gemma_swap.py   # GGUF q8_0 vs NVFP4 MLX delta
+~/claude/local_bench_mlx.py    # 5-prompt MLX coding bench
+~/claude/graft_mtp.py          # MTPLX MoE grafting recipe
+</code></pre>
+
+<p>Raw run JSON at <code>~/claude/bench_results/</code>; cached long-doc input at <code>~/claude/bench_data/frankenstein.txt</code>.</p>
+
+<footer>
+  <p>Field notes from <a href="https://github.com/rachokthebot-dev">rachokthebot-dev</a>. Hardware: Mac mini M4, 32 GB. Source for this page lives in the same repo — corrections welcome via PR.</p>
+  <p>Stack credits: <a href="https://github.com/ollama/ollama">Ollama</a>, rapid-mlx, <a href="https://github.com/ml-explore/mlx">MLX</a>, <a href="https://github.com/filipstrand/mflux">MFLUX</a>, <a href="https://github.com/ASLP-lab/SongFormer">SongFormer</a>, <a href="https://github.com/youssofal/MTPLX">MTPLX</a>.</p>
+</footer>
+
+</main>
+</body>
+</html>
