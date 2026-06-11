@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Local models on a Mac mini M4 32 GB — benchmark log</title>
-<meta name="description" content="Six months of running local LLMs, image generators, and a music-analysis model on a Mac mini M4 32 GB. Decode rates, prefill costs, quality, and the dead ends — all measured.">
+<title>Local models on a Mac mini M4 32 GB — June 2026 benchmark log</title>
+<meta name="description" content="June 2026 snapshot: six months of running local LLMs, image generators, and a music-analysis model on a Mac mini M4 32 GB. Decode rates, prefill costs, quality, release dates, and the dead ends — all measured.">
 <style>
   :root {
     --ivory:  #FAF9F5;
@@ -408,13 +408,13 @@
   <div class="hero-grid">
     <div>
       <div class="eyebrow">Field notes · M4 mini · 32 GB</div>
-      <h1>What actually <em>runs</em> on a 32&nbsp;GB Mac mini in 2026</h1>
+      <h1>What actually <em>runs</em> on a 32&nbsp;GB Mac mini — June 2026</h1>
       <p class="intro">
         Six months of running local LLMs, image generators, and a music-analysis model on the same Apple Silicon box.
         Decode rates, prefill costs, quality scores, and a stack of dead ends. Everything below is measured —
         <a href="https://github.com/rachokthebot-dev/local-models-blog/tree/main/bench">the scripts and raw JSON live in the repo</a>.
       </p>
-      <div class="meta">Updated 2026-06-10 · Mac mini M4 · 32 GB unified · ~120 GB/s bandwidth</div>
+      <div class="meta">June 2026 snapshot · Mac mini M4 · 32 GB unified · ~120 GB/s bandwidth</div>
       <nav class="toc">
         <a href="#tldr">Executive summary <span class="n">00</span></a>
         <a href="#hw">Hardware <span class="n">01</span></a>
@@ -458,42 +458,49 @@
   <p class="sec-intro">
     After cycling through roughly twenty open-weight models across LLM, image, and music tasks, three slots are
     settled and a fourth — a general-purpose local audio LLM — is still vacant. The shortlist below is what
-    survived the cuts.
+    survived the cuts. Dates are upstream release months — quant uploads and Ollama-MLX repackagings can lag
+    a few weeks behind.
   </p>
   <div class="sec-body">
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>Slot</th><th>Winner</th><th>Why it beat the field</th>
+        <th>Slot</th><th>Winner</th><th>Released</th><th>Why it beat the field</th>
       </tr></thead>
       <tbody>
         <tr class="win">
           <td><strong>Tool-calling agent LLM</strong></td>
           <td><code>Qwen3.6-35B-A3B-coding</code> NVFP4 MLX</td>
+          <td class="num">Apr 2026</td>
           <td>34 tok/s on Ollama-MLX, 41 tok/s on rapid-mlx; 7/7 on the tool-call suite. MoE with 3 B active = bandwidth-class of a 3 B model, capacity of a 35 B.</td>
         </tr>
         <tr class="win">
           <td><strong>Chat · vision · long-doc LLM</strong></td>
           <td><code>Gemma 4 26B-A4B QAT NVFP4</code></td>
+          <td class="num">Jun 2026</td>
           <td>34 tok/s decode (ties Qwen), wins vision (1.6× decode and 4.3× fewer image tokens vs Qwen3-VL-8B), wins long-doc decode (2.3× over Gemma 4 12B at 46 K context).</td>
         </tr>
         <tr class="win">
           <td><strong>Image generation — speed</strong></td>
           <td><code>FLUX.2 Klein 4B</code> via MFLUX</td>
+          <td class="num">Jan 2026</td>
           <td>60 s per 1024² image at 4 steps. Coexists with an LLM hot in memory — no eviction needed.</td>
         </tr>
         <tr class="win">
           <td><strong>Image generation — quality</strong></td>
           <td><code>FLUX.2 Klein 9B MLX-Q4</code></td>
+          <td class="num">Jan 2026</td>
           <td>115 s per image. Pre-quantized 4-bit MLX (8.9 GB, smaller than 4 B's FP16). Visibly sharper faces, fabric, text.</td>
         </tr>
         <tr class="win">
           <td><strong>Music structure analysis</strong></td>
           <td><code>SongFormer</code> (ASLP-lab)</td>
+          <td class="num">Oct 2025</td>
           <td>2.97 GB specialist transformer + MuQ SSL encoder. Beats Gemini 2.5 Pro on SongFormBench. Replaced our paid Gemini Flash pipeline.</td>
         </tr>
         <tr>
           <td><strong>Local audio LLM (general)</strong></td>
           <td><em style="color:var(--g500)">— none —</em></td>
+          <td class="num">—</td>
           <td>Gemma 4 e4b collapses every section to "chorus". Qwen2.5-Omni isn't in mlx-vlm yet. <code>mlx-lm-omni</code> has API rot.</td>
         </tr>
       </tbody>
@@ -572,14 +579,14 @@
 
     <div class="tbl-wrap"><table class="tbl">
     <thead><tr>
-      <th>#</th><th>Model</th><th>Runtime / quant</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Total</th><th>Quality</th>
+      <th>#</th><th>Model</th><th>Released</th><th>Runtime / quant</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Total</th><th>Quality</th>
     </tr></thead>
     <tbody>
-      <tr class="win"><td class="row-rank">01</td><td><strong>Gemma 4 26B-A4B QAT</strong></td><td>rapid-mlx · nvfp4</td><td class="num"><strong>34.1</strong></td><td class="num">2.1 s</td><td class="num">31.1 s</td><td>5/5/5</td></tr>
-      <tr><td class="row-rank">02</td><td>qwen-hermes (35B-A3B)</td><td>Ollama-MLX · nvfp4</td><td class="num">34.0</td><td class="num">11.9 s*</td><td class="num">70.7 s</td><td>—</td></tr>
-      <tr><td class="row-rank">03</td><td>gemma-hermes (6.3 B dense)</td><td>Ollama-MLX · /no_think</td><td class="num">31.9</td><td class="num">25.4 s*</td><td class="num">64.4 s</td><td>—</td></tr>
-      <tr><td class="row-rank">04</td><td>Qwen3-14B 4-bit</td><td>rapid-mlx · --no-thinking</td><td class="num">12.5</td><td class="num">1.9 s</td><td class="num">98.3 s</td><td>5/5/5</td></tr>
-      <tr><td class="row-rank">05</td><td>gemma4:12b-mlx</td><td>Ollama-MLX · nvfp4</td><td class="num">11.9</td><td class="num">1.8 s</td><td class="num">88.9 s</td><td>5/5/5</td></tr>
+      <tr class="win"><td class="row-rank">01</td><td><strong>Gemma 4 26B-A4B QAT</strong></td><td class="num">Jun 2026</td><td>rapid-mlx · nvfp4</td><td class="num"><strong>34.1</strong></td><td class="num">2.1 s</td><td class="num">31.1 s</td><td>5/5/5</td></tr>
+      <tr><td class="row-rank">02</td><td>qwen-hermes (35B-A3B)</td><td class="num">Apr 2026</td><td>Ollama-MLX · nvfp4</td><td class="num">34.0</td><td class="num">11.9 s*</td><td class="num">70.7 s</td><td>—</td></tr>
+      <tr><td class="row-rank">03</td><td>gemma-hermes (6.3 B dense)</td><td class="num">Mar 2025</td><td>Ollama-MLX · /no_think</td><td class="num">31.9</td><td class="num">25.4 s*</td><td class="num">64.4 s</td><td>—</td></tr>
+      <tr><td class="row-rank">04</td><td>Qwen3-14B 4-bit</td><td class="num">May 2025</td><td>rapid-mlx · --no-thinking</td><td class="num">12.5</td><td class="num">1.9 s</td><td class="num">98.3 s</td><td>5/5/5</td></tr>
+      <tr><td class="row-rank">05</td><td>gemma4:12b-mlx</td><td class="num">Apr 2026</td><td>Ollama-MLX · nvfp4</td><td class="num">11.9</td><td class="num">1.8 s</td><td class="num">88.9 s</td><td>5/5/5</td></tr>
     </tbody>
     </table></div>
     <p style="font-size:12.5px;color:var(--g500);font-family:var(--mono);margin-top:-12px">* cold-load TTFTs — model being swapped in. pure prefill on short prompts is 1–3 s.</p>
@@ -618,12 +625,12 @@
 
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>#</th><th>Model</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Image tokens</th><th>Quality</th>
+        <th>#</th><th>Model</th><th>Released</th><th class="num">Decode tok/s</th><th class="num">TTFT</th><th class="num">Image tokens</th><th>Quality</th>
       </tr></thead>
       <tbody>
-        <tr class="win"><td class="row-rank">01</td><td><strong>Gemma 4 26B-A4B QAT</strong></td><td class="num"><strong>34.0</strong></td><td class="num">3.0 s</td><td class="num"><strong>331</strong></td><td>5/5/5</td></tr>
-        <tr><td class="row-rank">02</td><td>Qwen3-VL-8B 4-bit</td><td class="num">21.5</td><td class="num">10.6 s</td><td class="num">1,436</td><td>5/5/5</td></tr>
-        <tr><td class="row-rank">—</td><td>Gemma 4 12B-mlx (Ollama)</td><td colspan="4">Text-only — Ollama's MLX package ships without the vision projector.</td></tr>
+        <tr class="win"><td class="row-rank">01</td><td><strong>Gemma 4 26B-A4B QAT</strong></td><td class="num">Jun 2026</td><td class="num"><strong>34.0</strong></td><td class="num">3.0 s</td><td class="num"><strong>331</strong></td><td>5/5/5</td></tr>
+        <tr><td class="row-rank">02</td><td>Qwen3-VL-8B 4-bit</td><td class="num">Sep 2025</td><td class="num">21.5</td><td class="num">10.6 s</td><td class="num">1,436</td><td>5/5/5</td></tr>
+        <tr><td class="row-rank">—</td><td>Gemma 4 12B-mlx (Ollama)</td><td class="num">Apr 2026</td><td colspan="4">Text-only — Ollama's MLX package ships without the vision projector.</td></tr>
       </tbody>
     </table></div>
 
@@ -690,6 +697,21 @@
       <div class="ch-axis"><span style="font-style:italic">tok/s</span><span class="ax-scale"><span>0</span><span>20</span><span>42</span></span><span></span></div>
     </div>
 
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr>
+        <th>Model</th><th>Released</th><th>Architecture</th><th class="num">Tool fidelity</th><th class="num">Decode tok/s</th><th class="num">Cold prefill (~13 K)</th>
+      </tr></thead>
+      <tbody>
+        <tr class="win"><td><strong>Qwen3.6-35B-A3B 4-bit</strong></td><td class="num">Apr 2026</td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num"><strong>41.5</strong></td><td class="num">24.5 s</td></tr>
+        <tr><td>Nemotron-3-Nano 30B-A3B</td><td class="num">Mar 2026</td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num">41.8</td><td class="num">26.2 s</td></tr>
+        <tr><td>GLM-4.7-Flash 4-bit</td><td class="num">Apr 2026</td><td>MoE 3 B-active</td><td class="num">7/7</td><td class="num">35.2</td><td class="num">49.8 s</td></tr>
+        <tr><td>Gemma 4 26B-A4B 4-bit</td><td class="num">May 2026</td><td>MoE 3.8 B-active</td><td class="num">7/7</td><td class="num">33.0</td><td class="num">25.4 s</td></tr>
+        <tr><td>Gemma 4 e4b 4-bit</td><td class="num">May 2026</td><td>~4 B dense</td><td class="num">6/7</td><td class="num">31.7</td><td class="num">16.7 s</td></tr>
+        <tr><td>Qwen3-Coder-Next 4-bit</td><td class="num">Feb 2026</td><td>MoE 80 B</td><td colspan="3">Disqualified — OOM at 42 GB &gt; 32 GB unified</td></tr>
+        <tr><td>Devstral-Small-2505 4-bit</td><td class="num">May 2025</td><td>dense 24 B</td><td colspan="3">Broken — chat template ships without tool rendering; 6.3 tok/s anyway</td></tr>
+      </tbody>
+    </table></div>
+
     <p><strong>Fidelity doesn't separate the fitting models.</strong> Every MoE that fits in 32 GB hits 7/7. The differentiator is decode speed, and decode speed is bandwidth-bound. Qwen3-Coder-Next (MoE 80 B, 42 GB at 4-bit) doesn't fit at all — Metal OOMs on first prefill.</p>
 
     <h3>Quick reference — our seven installed presets</h3>
@@ -697,15 +719,15 @@
     <p>~37 GB on disk total (three Qwen presets share NVFP4 blobs at 21 GB; three Gemma presets share theirs at 16 GB):</p>
 
     <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>Name</th><th>Base</th><th>Use for</th></tr></thead>
+      <thead><tr><th>Name</th><th>Base</th><th>Base released</th><th>Use for</th></tr></thead>
       <tbody>
-        <tr><td><code>qwen-chat</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Daily driver. 8 K ctx, think off. ~34 tok/s.</td></tr>
-        <tr><td><code>qwen-reason</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Multi-step reasoning. 64 K ctx, think on.</td></tr>
-        <tr><td><code>qwen-hermes</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Hermes Agent default. 64 K ctx, tool-call sampling.</td></tr>
-        <tr><td><code>qwen-coding-fast</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td>Long-context refactors. 32 K ctx, 16 K predict.</td></tr>
-        <tr><td><code>gemma-chat</code></td><td>gemma4:26b-a4b NVFP4</td><td>Prose, alternate voice. ~27 tok/s.</td></tr>
-        <tr><td><code>gemma-reason</code></td><td>gemma4:26b-a4b NVFP4</td><td>Tiebreaker vs qwen-reason.</td></tr>
-        <tr><td><code>gemma-agent</code></td><td>gemma4:26b-a4b NVFP4</td><td>Former hermes default. 256 K max ctx.</td></tr>
+        <tr><td><code>qwen-chat</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td class="num">Apr 2026</td><td>Daily driver. 8 K ctx, think off. ~34 tok/s.</td></tr>
+        <tr><td><code>qwen-reason</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td class="num">Apr 2026</td><td>Multi-step reasoning. 64 K ctx, think on.</td></tr>
+        <tr><td><code>qwen-hermes</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td class="num">Apr 2026</td><td>Hermes Agent default. 64 K ctx, tool-call sampling.</td></tr>
+        <tr><td><code>qwen-coding-fast</code></td><td>qwen3.6:35b-a3b-coding NVFP4</td><td class="num">Apr 2026</td><td>Long-context refactors. 32 K ctx, 16 K predict.</td></tr>
+        <tr><td><code>gemma-chat</code></td><td>gemma4:26b-a4b NVFP4</td><td class="num">May 2026</td><td>Prose, alternate voice. ~27 tok/s.</td></tr>
+        <tr><td><code>gemma-reason</code></td><td>gemma4:26b-a4b NVFP4</td><td class="num">May 2026</td><td>Tiebreaker vs qwen-reason.</td></tr>
+        <tr><td><code>gemma-agent</code></td><td>gemma4:26b-a4b NVFP4</td><td class="num">May 2026</td><td>Former hermes default. 256 K max ctx.</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -749,15 +771,15 @@
 
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>Model</th><th class="num">Params</th><th class="num">Disk</th><th class="num">Peak RAM</th><th class="num">Per image</th><th>Verdict</th>
+        <th>Model</th><th>Released</th><th class="num">Params</th><th class="num">Disk</th><th class="num">Peak RAM</th><th class="num">Per image</th><th>Verdict</th>
       </tr></thead>
       <tbody>
-        <tr class="win"><td><strong>FLUX.2 Klein 4B</strong></td><td class="num">4 B</td><td class="num">22 GB</td><td class="num">6–8 GB</td><td class="num"><strong>60 s</strong></td><td>Skill default. Co-runs with LLM hot.</td></tr>
-        <tr class="win"><td><strong>FLUX.2 Klein 9B MLX-Q4</strong></td><td class="num">9 B</td><td class="num">8.9 GB</td><td class="num">12–16 GB</td><td class="num"><strong>115 s</strong></td><td>Quality tier. Requires LLM eviction.</td></tr>
-        <tr><td>Z-Image-Turbo</td><td class="num">6 B</td><td class="num">5.5 GB</td><td class="num">—</td><td class="num">218 s</td><td>Deleted. Beat on speed/quality curve by Klein 9B.</td></tr>
-        <tr><td>Qwen-Image-2512</td><td class="num">20 B</td><td class="num">24 GB</td><td class="num">swap-bound</td><td class="num">1,300 s</td><td>Deleted. Best text rendering — but 22 min/image.</td></tr>
-        <tr><td>FLUX.1-dev</td><td class="num">12 B</td><td colspan="4">Download stalled overnight repeatedly. Abandoned for Klein.</td></tr>
-        <tr><td>HiDream-I1</td><td class="num">17 B</td><td colspan="4">Too tight on 32 GB; marginal gain over Klein 9B. Not pursued.</td></tr>
+        <tr class="win"><td><strong>FLUX.2 Klein 4B</strong></td><td class="num">Jan 2026</td><td class="num">4 B</td><td class="num">22 GB</td><td class="num">6–8 GB</td><td class="num"><strong>60 s</strong></td><td>Skill default. Co-runs with LLM hot.</td></tr>
+        <tr class="win"><td><strong>FLUX.2 Klein 9B MLX-Q4</strong></td><td class="num">Jan 2026<br><span style="font-size:10px;color:var(--g500)">pre-quant Apr 2026</span></td><td class="num">9 B</td><td class="num">8.9 GB</td><td class="num">12–16 GB</td><td class="num"><strong>115 s</strong></td><td>Quality tier. Requires LLM eviction.</td></tr>
+        <tr><td>Z-Image-Turbo</td><td class="num">Nov 2025</td><td class="num">6 B</td><td class="num">5.5 GB</td><td class="num">—</td><td class="num">218 s</td><td>Deleted. Beat on speed/quality curve by Klein 9B.</td></tr>
+        <tr><td>Qwen-Image-2512</td><td class="num">Dec 2025</td><td class="num">20 B</td><td class="num">24 GB</td><td class="num">swap-bound</td><td class="num">1,300 s</td><td>Deleted. Best text rendering — but 22 min/image.</td></tr>
+        <tr><td>FLUX.1-dev</td><td class="num">Aug 2024</td><td class="num">12 B</td><td colspan="4">Download stalled overnight repeatedly. Abandoned for Klein.</td></tr>
+        <tr><td>HiDream-I1</td><td class="num">May 2025</td><td class="num">17 B</td><td colspan="4">Too tight on 32 GB; marginal gain over Klein 9B. Not pursued.</td></tr>
       </tbody>
     </table></div>
 
@@ -788,35 +810,42 @@
 
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>Approach</th><th>Verdict</th>
+        <th>Approach</th><th>Released</th><th>Verdict</th>
       </tr></thead>
       <tbody>
         <tr>
           <td><strong>Gemini 2.5 Flash</strong> · audio-native, cloud</td>
+          <td class="num">Jun 2025</td>
           <td>Strong labels but hit the free-tier 250 K-token/day cap at ~32 songs. Paid is ~$0.002/song — still cloud, still rate-limited, still external dependency.</td>
         </tr>
         <tr>
           <td><strong>Claude Vision</strong> · on spectrogram screenshots</td>
+          <td class="num">—</td>
           <td>Worked but noticeably worse than audio-native LLMs. Spectrograms throw away too much signal.</td>
         </tr>
         <tr>
           <td><strong>Gemma 4 e4b</strong> · local audio LLM</td>
+          <td class="num">May 2026</td>
           <td>Collapsed every section to "chorus". Unusable. Other small audio LLMs equally weak.</td>
         </tr>
         <tr>
           <td><strong>Qwen2.5-Omni</strong> · local audio LLM</td>
+          <td class="num">Mar 2025</td>
           <td>Not loadable — <code>mlx-vlm</code> has no handler as of June 2026. <code>mlx-lm-omni</code> has API rot.</td>
         </tr>
         <tr>
           <td><strong>librosa HPSS + bar-snap</strong> · DSP only</td>
+          <td class="num">—</td>
           <td>Surprisingly good boundary detection — 9 musically-sensible cuts on a Seether track. Fully local. But cannot label sections, just finds the cuts.</td>
         </tr>
         <tr class="win">
           <td><strong>SongFormer</strong> · specialist transformer</td>
+          <td class="num">Oct 2025</td>
           <td><strong>Winner.</strong> 2.97 GB safetensors. MuQ SSL encoder + structure transformer. Beats Gemini 2.5 Pro on SongFormBench. 8-label vocab (intro, verse, chorus, bridge, inst, outro, silence, pre-chorus). Seconds per song on MPS.</td>
         </tr>
         <tr>
           <td>Music Flamingo 8B · NVIDIA, GGUF</td>
+          <td class="num">Apr 2026</td>
           <td>Kept on watchlist for narrative reasoning, but NVIDIA noncommercial license blocks commercial use.</td>
         </tr>
       </tbody>
@@ -842,46 +871,54 @@
   <div class="sec-body">
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr>
-        <th>Model</th><th>Why we're watching</th><th>What needs to change</th>
+        <th>Model</th><th>Released</th><th>Why we're watching</th><th>What needs to change</th>
       </tr></thead>
       <tbody>
         <tr>
           <td><strong>GLM-4.5-Air</strong></td>
+          <td class="num">Jul 2025</td>
           <td>Best published BFCL tool-call score (76.7%; Qwen is 75.7%)</td>
           <td>Needs a clean NVFP4 MLX build. Community GGUFs are ~25–30% slower on this rig.</td>
         </tr>
         <tr>
           <td><strong>Qwen3.6 with native MTP</strong></td>
+          <td class="num">Apr 2026</td>
           <td>1.4–1.6× decode on M4 Pro for dense 27 B per the spec</td>
           <td>mlx-lm PR #990 must merge into a release. No released runtime supports <code>qwen3_5_moe</code> native MTP today.</td>
         </tr>
         <tr>
           <td><strong>MTPLX MoE backend</strong></td>
+          <td class="num">May 2026</td>
           <td>1.71× verified on dense 27 B on this rig; awaiting MoE MTP-head support.</td>
           <td><a href="https://github.com/youssofal/MTPLX/issues/87">youssofal/MTPLX#87</a> — needs a <code>qwen3_next_moe_mtp</code> backend for 46-tensor MoE heads.</td>
         </tr>
         <tr>
           <td><strong>Gemma 4 vision via rapid-mlx</strong></td>
+          <td class="num">May 2026</td>
           <td>26B-A4B QAT already wins vision; would want the 12 B's <code>gemma4_unified</code> path too.</td>
           <td>mlx-vlm 0.6.1 supports it but needs newer mlx-metal than brew supplies. Brew installs without a RECORD file, blocking pip upgrades.</td>
         </tr>
         <tr>
           <td><strong>Nemotron-3-Nano 30B-A3B</strong></td>
+          <td class="num">Mar 2026</td>
           <td>Ties Qwen3.6 on decode (41.8 vs 41.5 tok/s) and tool fidelity (7/7).</td>
           <td>Nothing — viable drop-in. Kept installed as backup; no reason to switch from a working setup.</td>
         </tr>
         <tr>
           <td><strong>Music Flamingo 8B</strong></td>
+          <td class="num">Apr 2026</td>
           <td>Could complement SongFormer with narrative/genre/mood description.</td>
           <td>NVIDIA noncommercial license — deal-breaker if Shreddy ever ships commercially.</td>
         </tr>
         <tr>
           <td><strong>Qwen2.5-Omni / mlx-lm-omni</strong></td>
+          <td class="num">Mar 2025</td>
           <td>The "general local audio LLM" slot is still vacant.</td>
           <td>mlx-vlm needs a Qwen2.5-Omni handler. mlx-lm-omni's API needs stabilizing.</td>
         </tr>
         <tr>
           <td><strong>Qwen3-Next 80B</strong></td>
+          <td class="num">Feb 2026</td>
           <td>Would lift the coding ceiling — if it fit.</td>
           <td>42 GB at 4-bit exceeds 32 GB unified. Hard hardware ceiling — needs a 64 GB box.</td>
         </tr>
